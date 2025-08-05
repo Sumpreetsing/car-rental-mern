@@ -15,4 +15,8 @@ const carSchema=new mongoose.Schema({
     description:{type:String,required:true},
    avaliable:{type:Boolean,default:true},
     
-})
+},{timestamps:true})
+
+const Car=mongoose.model('Car',carSchema)
+
+export default Car;
