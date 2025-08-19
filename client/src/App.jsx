@@ -12,8 +12,7 @@ import AddCar from './pages/Owner/AddCar';
 import ManageCars from './pages/Owner/ManageCars';
 import ManageBookings from './pages/Owner/ManageBookings';
 import Login from './components/Login';
-
-
+import {Toaster} from 'react-hot-toast';
 
 
 
