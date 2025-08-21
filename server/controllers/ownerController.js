@@ -211,23 +211,31 @@ export const getDashboardData=async(req,res)=>{
 }
 
 // API to update user image
-export const updateUserImage=async()=>{
+export const updateUserImage = async (req, res) => { // ← Missing req, res parameters
     try {
-         const {_id}=req.user;
-
-         const imageFile = req.file;
+        const { _id } = req.user;
         
-        // Fix: Read file content, not directory
-        const fileBuffer = fs.readFileSync(imageFile.path) // Changed from readdirSync to readFileSync
+        // Check if file was uploaded
+        if (!req.file) {
+            return res.status(400).json({
+                success: false,
+                message: "No image file provided"
+            });
+        }
+
+        const imageFile = req.file;
+        
+        // Read file content properly
+        const fileBuffer = fs.readFileSync(imageFile.path);
         
         const response = await imagekit.upload({
             file: fileBuffer,
             fileName: imageFile.originalname,
             folder: '/users'
-        })
+        });
         
-        // optimization through imagekit url transformation 
-        var optimizedImageURL = imagekit.url({
+        // Optimization through imagekit url transformation 
+        const optimizedImageURL = imagekit.url({
             path: response.filePath,
             transformation: [
                 { width: '400' },
@@ -238,15 +246,18 @@ export const updateUserImage=async()=>{
 
         const image = optimizedImageURL;
 
-        await User.findByIdAndUpdate(_id,{image});
+        await User.findByIdAndUpdate(_id, { image });
 
-        res.json({success:true,message:"Image updated"})
+        // Clean up temporary file
+        fs.unlinkSync(imageFile.path);
+
+        res.json({ success: true, message: "Image updated" });
 
     } catch (error) {
-        console.log(error.message)
-        res.json({
+        console.log("Error in updateUserImage:", error.message);
+        res.status(500).json({ // ← Changed to status 500
             success: false,
             message: error.message
-        })
+        });
     }
-}
+};
