@@ -47,12 +47,23 @@ export const AppProvider=({children})=>{
             toast.error(error.message)
         }
     }
+    // function to logout the user
+    const logout=()=>{
+        localStorage.removeItem('token')
+        setToken(null)
+        setUser(null)
+        setIsOwner(false)
+        axios.defaults.headers.common['Authorization']=''
+        toast.success('You have been successfully logged out')
+    }
+
 
 
     // useEffect to retrive the token from localstorage
     useEffect(()=>{
         const token=localStorage.getItem('token')
         setToken(token)
+        fetchCars()
     },[])
 
     // useEffect to fetch userdata when token is available
@@ -64,7 +75,10 @@ export const AppProvider=({children})=>{
     },[token])
 
     const value={
-        navigate,currency,
+        navigate,currency,axios,user,setUser,token,
+        setToken,isOwner,setIsOwner,fetchUser,showLogin,setShowLogin,
+        logout,fetchCars,cars,setCars,pickUpDate,setPickUpDate,
+        returnDate,setReturnDate
     }
 
     return(
